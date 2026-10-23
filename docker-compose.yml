@@ -1,0 +1,16 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - data:/data
+    environment:
+      ADMIN_USER: admin
+      ADMIN_PASSWORD: changeme
+      DB_PATH: /data/data.db
+      UPLOADS_DIR: /data/uploads
+    restart: unless-stopped
+
+volumes:
+  data:

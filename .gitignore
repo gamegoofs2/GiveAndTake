@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# Runtime data
+data.db
+uploads/
+/data
+
+# OS
+.DS_Store
+Thumbs.db

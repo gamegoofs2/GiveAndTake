@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Admin - Give &amp; Take{% endblock %}
+{% block content %}
+<h1>Admin</h1>
+<p class="muted">Logged in as {{ user }}. <a href="/admin/orders">View claims</a></p>
+
+<h2>Add item</h2>
+<form method="post" action="/admin/items" enctype="multipart/form-data">
+  <div class="form-row"><label>Title</label><input name="title" required></div>
+  <div class="form-row"><label>Description</label><textarea name="description"></textarea></div>
+  <div class="form-row"><label>Price (0 = free)</label><input type="number" step="0.01" name="price" value="0"></div>
+  <div class="form-row"><label>Condition</label><input name="condition" placeholder="New / Used / Good"></div>
+  <div class="form-row"><label>Category</label><input name="category" placeholder="Furniture, Electronics..."></div>
+  <div class="form-row"><label>Image URL (optional)</label><input name="image_url" placeholder="https://..."></div>
+  <div class="form-row"><label>Or upload image</label><input type="file" name="image" accept="image/*"></div>
+  <button class="btn" type="submit">Add item</button>
+</form>
+
+<h2>Items</h2>
+<table class="admin-table">
+  <thead><tr><th>Image</th><th>Title</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+  <tbody>
+  {% for item in items %}
+  <tr>
+    <td>{% if item.image %}<img src="{{ item.image }}">{% endif %}</td>
+    <td>{{ item.title }}<br><span class="muted">{{ item.category }}</span></td>
+    <td>{% if item.price and item.price > 0 %}${{ "%.2f"|format(item.price) }}{% else %}Free{% endif %}</td>
+    <td>
+      <form method="post" action="/admin/items/{{ item.id }}/status" class="inline">
+        <select name="status_val" onchange="this.form.submit()">
+          {% for s in ['available','claimed','sold'] %}
+          <option value="{{ s }}" {% if item.status==s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </form>
+    </td>
+    <td>
+      <form method="post" action="/admin/items/{{ item.id }}/delete" class="inline" onsubmit="return confirm('Delete?')">
+        <button class="btn danger" type="submit">Delete</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

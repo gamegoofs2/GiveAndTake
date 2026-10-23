@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Claims - Give &amp; Take{% endblock %}
+{% block content %}
+<h1>Claims / Orders</h1>
+<p class="muted"><a href="/admin">Back to admin</a></p>
+{% if orders %}
+<table class="admin-table">
+  <thead><tr><th>ID</th><th>Item</th><th>Buyer email</th><th>When</th></tr></thead>
+  <tbody>
+  {% for o in orders %}
+  <tr>
+    <td>{{ o.id }}</td>
+    <td><a href="/items/{{ o.item_id }}">{{ o.title }}</a></td>
+    <td>{{ o.buyer_email }}</td>
+    <td>{{ o.created_at }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="muted">No claims yet.</p>
+{% endif %}
+{% endblock %}

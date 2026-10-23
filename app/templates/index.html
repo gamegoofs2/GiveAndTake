@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Browse - Give &amp; Take{% endblock %}
+{% block content %}
+<h1>Items available</h1>
+<p class="muted">All transactions are in person. Claim an item by entering your email.</p>
+{% if items %}
+<div class="grid">
+  {% for item in items %}
+  <a class="card" href="/items/{{ item.id }}">
+    {% if item.image %}<img src="{{ item.image }}" alt="{{ item.title }}">{% else %}<img src="https://placehold.co/400x300?text=No+image" alt="">{% endif %}
+    <div class="body">
+      <h3>{{ item.title }}</h3>
+      <div class="price">{% if item.price and item.price > 0 %}${{ "%.2f"|format(item.price) }}{% else %}Free{% endif %}</div>
+      <div class="muted">{{ item.category or '' }} {% if item.condition %}· {{ item.condition }}{% endif %}</div>
+      <span class="badge {{ item.status }}">{{ item.status }}</span>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<p class="muted">No items yet. Check back soon!</p>
+{% endif %}
+{% endblock %}

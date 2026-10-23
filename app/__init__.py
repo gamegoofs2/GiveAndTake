@@ -1,0 +1,1 @@
+"""Give & Take - quick ecommerce for in-person giveaways/sales."""

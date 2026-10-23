@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ item.title }} - Give &amp; Take{% endblock %}
+{% block content %}
+{% set msg = request.query_params.get('msg') %}
+{% if msg == 'claimed' %}<div class="msg ok">Claimed! The seller will reach out to arrange pickup.</div>{% endif %}
+{% if msg == 'already_claimed' %}<div class="msg warn">Sorry, this item was already claimed.</div>{% endif %}
+{% if msg == 'bad_email' %}<div class="msg warn">Please enter a valid email address.</div>{% endif %}
+<div class="detail">
+  {% if item.image %}<img src="{{ item.image }}" alt="{{ item.title }}">{% endif %}
+  <h1>{{ item.title }}</h1>
+  <div class="meta">
+    <div class="kv"><b>Price</b><span>{% if item.price and item.price > 0 %}${{ "%.2f"|format(item.price) }}{% else %}Free{% endif %}</span></div>
+    {% if item.category %}<div class="kv"><b>Category</b><span>{{ item.category }}</span></div>{% endif %}
+    {% if item.condition %}<div class="kv"><b>Condition</b><span>{{ item.condition }}</span></div>{% endif %}
+    <div class="kv"><b>Status</b><span class="badge {{ item.status }}">{{ item.status }}</span></div>
+  </div>
+  {% if item.description %}<p>{{ item.description }}</p>{% endif %}
+  {% if item.status == 'available' %}
+  <form method="post" action="/items/{{ item.id }}/claim" class="claim-form">
+    <div class="form-row">
+      <label for="email">Your email</label>
+      <input type="email" id="email" name="email" required placeholder="you@example.com">
+    </div>
+    <button class="btn" type="submit">Claim this item</button>
+  </form>
+  {% else %}
+  <p class="muted">This item is no longer available.</p>
+  {% endif %}
+</div>
+{% endblock %}
