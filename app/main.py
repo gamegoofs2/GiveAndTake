@@ -103,18 +103,25 @@ def item_detail(request: Request, item_id: int):
 def claim_item(
     request: Request,
     item_id: int,
-    email: str = Form(...),
+    name: str = Form(""),
+    email: str = Form(""),
 ):
     item = fetch_item(item_id)
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
     if item["status"] != "available":
         return RedirectResponse(url=f"/items/{item_id}?msg=already_claimed", status_code=303)
+    name = name.strip()
     email = email.strip()
+    if not name:
+        return RedirectResponse(url=f"/items/{item_id}?msg=bad_name", status_code=303)
     if not email or "@" not in email:
         return RedirectResponse(url=f"/items/{item_id}?msg=bad_email", status_code=303)
     conn = get_conn()
-    conn.execute("INSERT INTO orders (item_id, buyer_email) VALUES (?, ?)", (item_id, email))
+    conn.execute(
+        "INSERT INTO orders (item_id, buyer_name, buyer_email) VALUES (?, ?, ?)",
+        (item_id, name, email),
+    )
     conn.execute("UPDATE items SET status='claimed' WHERE id=? AND status='available'", (item_id,))
     conn.commit()
     conn.close()
@@ -187,7 +194,7 @@ def admin_set_status(item_id: int, status_val: str = Form(...), user: str = Depe
 def admin_orders(request: Request, user: str = Depends(require_admin)):
     conn = get_conn()
     rows = conn.execute(
-        """SELECT o.id, o.buyer_email, o.created_at, i.title, i.id AS item_id
+        """SELECT o.id, o.buyer_name, o.buyer_email, o.created_at, i.title, i.id AS item_id
            FROM orders o JOIN items i ON i.id=o.item_id
            ORDER BY o.created_at DESC"""
     ).fetchall()

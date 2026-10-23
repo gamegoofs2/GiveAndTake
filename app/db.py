@@ -30,13 +30,19 @@ def init_db():
         CREATE TABLE IF NOT EXISTS orders (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             item_id INTEGER NOT NULL,
+            buyer_name TEXT,
             buyer_email TEXT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (item_id) REFERENCES items (id)
         );
         """
     )
-    conn.commit()
+    # migrate older databases that lack buyer_name
+    try:
+        conn.execute("ALTER TABLE orders ADD COLUMN buyer_name TEXT")
+        conn.commit()
+    except sqlite3.OperationalError:
+        pass
     conn.close()
 
 

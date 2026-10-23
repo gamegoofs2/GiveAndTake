@@ -5,12 +5,13 @@
 <p class="muted"><a href="/admin">Back to admin</a></p>
 {% if orders %}
 <table class="admin-table">
-  <thead><tr><th>ID</th><th>Item</th><th>Buyer email</th><th>When</th></tr></thead>
+  <thead><tr><th>ID</th><th>Item</th><th>Buyer name</th><th>Buyer email</th><th>When</th></tr></thead>
   <tbody>
   {% for o in orders %}
   <tr>
     <td>{{ o.id }}</td>
     <td><a href="/items/{{ o.item_id }}">{{ o.title }}</a></td>
+    <td>{{ o.buyer_name or '' }}</td>
     <td>{{ o.buyer_email }}</td>
     <td>{{ o.created_at }}</td>
   </tr>
