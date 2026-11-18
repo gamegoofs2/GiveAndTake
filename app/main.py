@@ -169,6 +169,55 @@ async def admin_create_item(
     return RedirectResponse(url="/admin", status_code=303)
 
 
+@app.get("/admin/items/{item_id}/edit", response_class=HTMLResponse)
+def admin_edit_form(request: Request, item_id: int, user: str = Depends(require_admin)):
+    item = fetch_item(item_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return TEMPLATES.TemplateResponse(
+        request, "edit.html", {"item": item, "user": user}
+    )
+
+
+@app.post("/admin/items/{item_id}/edit")
+async def admin_edit_item(
+    request: Request,
+    item_id: int,
+    title: str = Form(...),
+    description: str = Form(""),
+    price: float = Form(0.0),
+    condition: str = Form(""),
+    category: str = Form(""),
+    status_val: str = Form(""),
+    image_url: str = Form(""),
+    image: UploadFile = File(None),
+    user: str = Depends(require_admin),
+):
+    item = fetch_item(item_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    image_path = item["image"]
+    if image_url.strip():
+        image_path = image_url.strip()
+    if image is not None and image.filename:
+        ext = Path(image.filename).suffix
+        fname = f"{uuid.uuid4().hex}{ext}"
+        dest = UPLOADS / fname
+        with dest.open("wb") as f:
+            shutil.copyfileobj(image.file, f)
+        image_path = f"/uploads/{fname}"
+    new_status = status_val if status_val in ("available", "claimed", "sold") else item["status"]
+    conn = get_conn()
+    conn.execute(
+        """UPDATE items SET title=?, description=?, price=?, condition=?, category=?, image=?, status=?
+           WHERE id=?""",
+        (title.strip(), description.strip(), price, condition.strip(), category.strip(), image_path, new_status, item_id),
+    )
+    conn.commit()
+    conn.close()
+    return RedirectResponse(url="/admin", status_code=303)
+
+
 @app.post("/admin/items/{item_id}/delete")
 def admin_delete_item(item_id: int, user: str = Depends(require_admin)):
     conn = get_conn()

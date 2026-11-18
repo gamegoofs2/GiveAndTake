@@ -35,6 +35,7 @@
       </form>
     </td>
     <td>
+      <a class="btn secondary" href="/admin/items/{{ item.id }}/edit">Edit</a>
       <form method="post" action="/admin/items/{{ item.id }}/delete" class="inline" onsubmit="return confirm('Delete?')">
         <button class="btn danger" type="submit">Delete</button>
       </form>
