@@ -9,7 +9,7 @@ FastAPI + SQLite + Jinja2 site for listing items to give away/sell in person. Bu
 - Admin: `/admin`, default creds `admin` / `changeme` (override `ADMIN_USER`/`ADMIN_PASSWORD`)
 
 ## Structure
-- `app/main.py` — routes (public browse/claim, admin CRUD, orders)
+- `app/main.py` — routes (public browse/claim, admin CRUD + edit, orders)
 - `app/db.py` — SQLite init + `DB_PATH` (default `data.db`)
 - `app/templates/` — Jinja2 templates; `app/static/style.css`
 - Uploads served from `UPLOADS_DIR` (default `uploads/`) at `/uploads`
